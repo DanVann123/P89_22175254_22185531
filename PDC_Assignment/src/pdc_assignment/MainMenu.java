@@ -52,6 +52,8 @@ public class MainMenu extends JFrame{
         add(buttonPanel, BorderLayout.CENTER);
         
         loginButton.addActionListener(e -> {
+            System.out.println("Password11111aaaaaaaaaaaaaaaaa:");
+
             new Login().setVisible(true);
             this.dispose();
         });

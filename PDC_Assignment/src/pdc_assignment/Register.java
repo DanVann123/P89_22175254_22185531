@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import java.sql.SQLException;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 /**
  *
@@ -22,7 +23,15 @@ import javax.swing.JOptionPane;
  */
 public class Register extends JFrame {
 
-    private DatabaseManager databaseManager;
+    public DatabaseManager databaseManager;
+    public JTextField userText;
+    public JPasswordField passwordText;
+    public JComboBox<String> userGroupComboBox;
+    public JButton loginButton;
+    private JButton registerButton;
+    private InventoryManagementGUI inventoryManagementGUI;
+    public JButton submitButton;
+    
     
     public Register() {
         setTitle("Register");
@@ -34,13 +43,14 @@ public class Register extends JFrame {
         constraints.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel userLabel = new JLabel("User Name:");
-        JTextField userText = new JTextField(20);
+        this.userText = new JTextField(20);
         JLabel passwordLabel = new JLabel("Password:");
-        JPasswordField passwordText = new JPasswordField(20);
-        JLabel groupLabel = new JLabel("User Group:");
-        JTextField groupText = new JTextField(20);
+        this.passwordText = new JPasswordField(20);
+         JLabel userGroupLabel = new JLabel("User Group:");
+        String[] userGroups = {"admin", "customer"};
+        this.userGroupComboBox = new JComboBox<>(userGroups);
 
-        JButton submitButton = new JButton("Submit");
+        this.submitButton = new JButton("Submit");
         JButton backButton = new JButton("Back to Sign In");
 
         // Position User Label
@@ -52,7 +62,7 @@ public class Register extends JFrame {
         // Position User Text Field
         constraints.gridx = 1;
         constraints.gridy = 0;
-        panel.add(userText, constraints);
+        panel.add(this.userText, constraints);
 
         // Position Password Label
         constraints.gridx = 0;
@@ -62,28 +72,33 @@ public class Register extends JFrame {
         // Position Password Text Field
         constraints.gridx = 1;
         constraints.gridy = 1;
-        panel.add(passwordText, constraints);
+        panel.add(this.passwordText, constraints);
 
         // Position Group Label
         constraints.gridx = 0;
         constraints.gridy = 2;
-        panel.add(groupLabel, constraints);
+        panel.add(userGroupLabel, constraints);
 
         // Position Group Text Field
         constraints.gridx = 1;
         constraints.gridy = 2;
-        panel.add(groupText, constraints);
+        panel.add(this.userGroupComboBox, constraints);
+        
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        panel.add(new JLabel(), constraints);
+
 
         // Position Submit Button
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         constraints.gridwidth = 2;
         constraints.insets = new Insets(10, 10, 10, 10);
-        panel.add(submitButton, constraints);
+        panel.add(this.submitButton, constraints);
 
         // Position Back Button
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.gridwidth = 2;
         panel.add(backButton, constraints);
 
@@ -92,20 +107,37 @@ public class Register extends JFrame {
         // Initialize the database manager
         databaseManager = new DatabaseManager();
         
-        submitButton.addActionListener(e -> {
-            String userName = userText.getText();
-            String passWord = new String(passwordText.getPassword());
-            String userGroup = groupText.getText();
+        this.submitButton.addActionListener(e -> {
+            String userName = this.userText.getText();
+            String passWord = new String(this.passwordText.getPassword());
+            String selectedUserGroup = (String) this.userGroupComboBox.getSelectedItem();
             System.out.println("User Name: " + userName);
             System.out.println("Password: " + passWord);
-            System.out.println("User Group: " + userGroup);
+            System.out.println("User Group: " + selectedUserGroup);
 
             // Register user by inserting data into the database
             try {
-                databaseManager.insertUser( /* provide user id */1 , userName, passWord);
-                JOptionPane.showMessageDialog(this, "Registration successful!");
-                new Login().setVisible(true); // Go to login screen after successful registration
-                this.dispose();
+                // Check if registering as admin
+                if (selectedUserGroup.equals("admin")) {
+                    // Prompt for special admin username and password
+                    String adminUsername = JOptionPane.showInputDialog(this, "Enter admin username:");
+                    String adminPassword = JOptionPane.showInputDialog(this, "Enter admin password:");
+                    
+                    if (adminUsername != null && adminPassword != null && adminUsername.equals("admin") && adminPassword.equals("admin")) {
+                        // Proceed with admin registration
+                        databaseManager.insertUser(userName, passWord, selectedUserGroup);
+                        JOptionPane.showMessageDialog(this, "Admin registration successful!");
+                        new Login().setVisible(true); // Go to login screen after successful registration
+                        this.dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Invalid admin credentials. Please try again.");
+                    }
+                } else {
+                    databaseManager.insertUser(userName, passWord, selectedUserGroup);
+                    JOptionPane.showMessageDialog(this, "Registration successful!");
+                    new Login().setVisible(true); // Go to login screen after successful registration
+                    this.dispose();
+                }
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error occurred during registration.");
@@ -117,6 +149,7 @@ public class Register extends JFrame {
             this.dispose();
         });
     }
+    
     @Override
     public void dispose() {
         super.dispose();
