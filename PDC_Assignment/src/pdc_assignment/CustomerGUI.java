@@ -16,12 +16,12 @@ import javax.swing.table.DefaultTableModel;
  * @author xuyan
  */
 public class CustomerGUI extends JFrame{
-    private JTable productTable;
-    private DefaultTableModel productTableModel;
-    private DatabaseManager dbManager;
-    private JButton addToCartButton;
-    private JButton viewCartButton;
-    private JButton viewOrderHistoryButton;
+    public JTable productTable;
+    public DefaultTableModel productTableModel;
+    public DatabaseManager dbManager;
+    public JButton addToCartButton;
+    public JButton viewCartButton;
+    public JButton viewOrderHistoryButton;
 //    private Integer userId;
 
     public CustomerGUI(int userId) {
@@ -113,12 +113,13 @@ public class CustomerGUI extends JFrame{
     }
 
 
-    private void loadProducts() {
+    public void loadProducts() {
         Vector<Vector<Object>> products = dbManager.selectProduct();
         for (Vector<Object> product : products) {
             productTableModel.addRow(product);
         }
     }
-
+    
+    
     
 }
