@@ -20,6 +20,7 @@ public class InventoryManagementGUI extends JFrame {
     private RemoveProductFrame removeProductFrame;
     private ViewInventoryFrame viewInventoryFrame;
     private AddProductFrame addProductFrame;
+    private DatabaseManager dbManager;
 
     public InventoryManagementGUI() {
         setTitle("Inventory Management System");
@@ -41,7 +42,7 @@ public class InventoryManagementGUI extends JFrame {
         add(removeButton);
         add(viewInventoryButton);
 
-        String url = "jdbc:derby://localhost:1527/InventoryManagement;create=true";
+        String url = "jdbc:derby://localhost:1527/InventoryManagement;create=true;";
         String user = "pdc"; // Update with your database username
         String password = "pdc"; // Update with your database password
 
@@ -65,7 +66,7 @@ public class InventoryManagementGUI extends JFrame {
     public void handleViewInventory() {
         System.out.println("Handling View Inventory...");
         // Implement view inventory functionality here
-        viewInventoryFrame = new ViewInventoryFrame();
+        viewInventoryFrame = new ViewInventoryFrame(dbManager);
         viewInventoryFrame.setVisible(true);
     }
     public void handleAdd() {

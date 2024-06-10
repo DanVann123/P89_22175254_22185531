@@ -40,10 +40,8 @@ public class LoginTest {
         login.passwordText.setText("dan123");
         login.userGroupComboBox.setSelectedItem("admin");
 
-        // Simulate login button click
         login.loginButton.doClick();
 
-        // Check if InventoryManagementGUI is visible
         InventoryManagementGUI inventoryManagementGUI = login.getInventoryManagementGUI();
         assertNotNull("InventoryManagementGUI should be instantiated", inventoryManagementGUI);
         assertTrue("InventoryManagementGUI should be visible", inventoryManagementGUI.isVisible());
@@ -56,10 +54,8 @@ public class LoginTest {
         login.passwordText.setText("wrongPassword");
         login.userGroupComboBox.setSelectedItem("admin");
 
-        // Simulate login button click
         login.loginButton.doClick();
 
-        // Check that InventoryManagementGUI is not instantiated
         InventoryManagementGUI inventoryManagementGUI = login.getInventoryManagementGUI();
         assertNull("InventoryManagementGUI should not be instantiated", inventoryManagementGUI);
     }
