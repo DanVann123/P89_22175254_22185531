@@ -268,34 +268,35 @@ public class DatabaseManager {
     public void checkout(int customerId, Vector<Vector<Object>> cartItems) throws SQLException {
         connection.setAutoCommit(false);
         try {
-        double totalPrice = calculateTotal(cartItems);
-        int saleOrderId = insertOrder(customerId, totalPrice);
+            double totalPrice = calculateTotal(cartItems);
+            int saleOrderId = insertOrder(customerId, totalPrice);
 
-        for (Vector<Object> cartItem : cartItems) {
-            int productId = (int) cartItem.get(1);
-            int quantity = (int) cartItem.get(3);
-            double price = (double) cartItem.get(4);
-            
-            // Deduct stock from the database
-            updateInventory(productId, quantity);
-            
-            // Insert sale order items
-            insertSaleOrderItems(saleOrderId, productId, quantity, price);
+            for (Vector<Object> cartItem : cartItems) {
+                int productId = (int) cartItem.get(1);
+                int quantity = (int) cartItem.get(3);
+                double price = (double) cartItem.get(4);
+
+                // Deduct stock from the database
+                updateInventory(productId, quantity);
+
+                // Insert sale order items
+                insertSaleOrderItems(saleOrderId, productId, quantity, price);
+            }
+
+            clearCart(customerId);
+            connection.commit();
+            JOptionPane.showMessageDialog(null, "Checkout completed!");
+        } catch (SQLException ex) {
+            connection.rollback();
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Checkout failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            connection.setAutoCommit(true);
         }
-
-        clearCart(customerId);
-        connection.commit();
-        JOptionPane.showMessageDialog(null, "Checkout completed!");
-    } catch (SQLException ex) {
-        connection.rollback();
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Checkout failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    } finally {
-        connection.setAutoCommit(true);
-    }
     }
     
-   public void processOrder(Vector<Vector<Object>> cart_items) throws SQLException {
+    
+    public void processOrder(Vector<Vector<Object>> cart_items) throws SQLException {
         // Logic to save the order in the database
         String orderQuery = "INSERT INTO orders (orderId, totalAmount) VALUES (?, ?)";
         try (PreparedStatement orderStmt = connection.prepareStatement(orderQuery, Statement.RETURN_GENERATED_KEYS)) {

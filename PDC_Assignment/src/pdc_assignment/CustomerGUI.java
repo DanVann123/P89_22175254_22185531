@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 /**
@@ -50,36 +51,48 @@ public class CustomerGUI extends JFrame{
         addToCartButton = new JButton("Add to Cart");
         addToCartButton.addActionListener(new ActionListener() {
             @Override
-                public void actionPerformed(ActionEvent e) {
-                    int selectedRow = productTable.getSelectedRow();
-                    if (selectedRow != -1) {
-                        Integer productId = (Integer) productTableModel.getValueAt(selectedRow, 0);
-                        String productName = (String) productTableModel.getValueAt(selectedRow, 1);
-                        int stock = (int) productTableModel.getValueAt(selectedRow, 2);
-                        double price = (double) productTableModel.getValueAt(selectedRow, 3);
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = productTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    String productIdStr = productTableModel.getValueAt(selectedRow, 0).toString();
+                    String productName = productTableModel.getValueAt(selectedRow, 1).toString();
+                    String stockStr = productTableModel.getValueAt(selectedRow, 2).toString();
+                    String priceStr = productTableModel.getValueAt(selectedRow, 3).toString();
+
+                    try {
+                        int productId = Integer.parseInt(productIdStr);
+                        int stock = Integer.parseInt(stockStr);
+                        double price = Double.parseDouble(priceStr);
 
                         // Prompt for quantity
                         String quantityStr = JOptionPane.showInputDialog("Enter quantity:");
                         if (quantityStr != null && !quantityStr.isEmpty()) {
-                            int quantity = Integer.parseInt(quantityStr);
-                            if (quantity > 0 && quantity <= stock) {
-                                // Add to cart
-                                boolean res = dbManager.insertCart(userId, productId, productName, quantity, price);
-                                if (res) {
-                                    // Update product table
-                                    updateProductTable();
-                                    JOptionPane.showMessageDialog(CustomerGUI.this, "Added to cart!");
+                            try {
+                                int quantity = Integer.parseInt(quantityStr);
+                                if (quantity > 0 && quantity <= stock) {
+                                    // Add to cart
+                                    boolean res = dbManager.insertCart(userId, productId, productName, quantity, price);
+                                    if (res) {
+                                        // Update product table
+                                        updateProductTable();
+                                        JOptionPane.showMessageDialog(CustomerGUI.this, "Added to cart!");
+                                    } else {
+                                        JOptionPane.showMessageDialog(CustomerGUI.this, "Failed to add to cart!");
+                                    }
                                 } else {
-                                    JOptionPane.showMessageDialog(CustomerGUI.this, "Failed to add to cart!");
+                                    JOptionPane.showMessageDialog(CustomerGUI.this, "Invalid quantity!");
                                 }
-                            } else {
-                                JOptionPane.showMessageDialog(CustomerGUI.this, "Invalid quantity!");
+                            } catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(CustomerGUI.this, "Please enter a valid number!", "Invalid Input", JOptionPane.WARNING_MESSAGE);
                             }
                         }
-                    } else {
-                        JOptionPane.showMessageDialog(CustomerGUI.this, "Please select a product!");
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(CustomerGUI.this, "Error parsing product data. Please try again.", "Data Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } else {
+                    JOptionPane.showMessageDialog(CustomerGUI.this, "Please select a product!");
                 }
+            }
         });
 
         // View Cart Button
@@ -113,6 +126,9 @@ public class CustomerGUI extends JFrame{
 
     private void loadProducts() {
         Vector<Vector<Object>> products = dbManager.selectProduct();
+        
+        products.sort(Comparator.comparingInt(product -> (Integer) product.get(0)));
+        
         for (Vector<Object> product : products) {
             productTableModel.addRow(product);
         }
