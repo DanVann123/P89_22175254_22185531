@@ -54,30 +54,38 @@ public class CartGUI extends JFrame {
             
              @Override
             public void actionPerformed(ActionEvent e) {
-                int confirmation = JOptionPane.showConfirmDialog(CartGUI.this, "Confirm checkout?");
-                if (confirmation == JOptionPane.YES_OPTION) {
-                    int[] selectedRows = cartTable.getSelectedRows();
-                    List<CartItem> cartList = new ArrayList<>();
-                    Integer customerId = 0;
-                    for (int rowIndex : selectedRows) {
-                        Vector<Object> selectedRow = carts.get(rowIndex);
-                        CartItem cartItem = new CartItem();
-                        customerId = (Integer) selectedRow.get(0);
-                        cartItem.setCustomerId((Integer) selectedRow.get(0));
-                        cartItem.setProductId((Integer) selectedRow.get(1));
-                        cartItem.setProductName((String) selectedRow.get(2));
-                        cartItem.setQuantity((Integer) selectedRow.get(3));
-                        cartItem.setPrice((Double) selectedRow.get(4));
+                int[] selectedRows = cartTable.getSelectedRows();
 
-                        cartList.add(cartItem);
+                if (selectedRows.length == 0) { // No items selected
+                    JOptionPane.showMessageDialog(CartGUI.this, "Purchase unsuccessful. No item selected.", "Warning", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    int confirmation = JOptionPane.showConfirmDialog(CartGUI.this, "Confirm checkout?");
+                    if (confirmation == JOptionPane.YES_OPTION) {
+                        List<CartItem> cartList = new ArrayList<>();
+                        Integer customerId = 0;
+                        for (int rowIndex : selectedRows) {
+                            Vector<Object> selectedRow = carts.get(rowIndex);
+                            CartItem cartItem = new CartItem();
+                            customerId = (Integer) selectedRow.get(0);
+                            cartItem.setCustomerId((Integer) selectedRow.get(0));
+                            cartItem.setProductId((Integer) selectedRow.get(1));
+                            cartItem.setProductName((String) selectedRow.get(2));
+                            cartItem.setQuantity((Integer) selectedRow.get(3));
+                            cartItem.setPrice((Double) selectedRow.get(4));
+
+                            cartList.add(cartItem);
+                        }
+
+                        dbManager.insertOrder(customerId, cartList);
+                        dbManager.clearCartItems(cartList);
+
+                        // Update the existing CustomerGUI
+                        customerGUI.updateProductTable();
+
+                        // Show success message
+                        JOptionPane.showMessageDialog(CartGUI.this, "Purchase successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        dispose(); // Close the CartGUI window
                     }
-                    
-                    dbManager.insertOrder(customerId, cartList);
-                    dbManager.clearCartItems(cartList);
-                    
-                    // Update the existing CustomerGUI
-                    customerGUI.updateProductTable();
-                    dispose(); // Close the CartGUI window
                 }
             }
         });
