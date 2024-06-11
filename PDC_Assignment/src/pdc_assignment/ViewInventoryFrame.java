@@ -15,13 +15,11 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.Vector;
 public class ViewInventoryFrame extends JFrame {
-    public DatabaseManager dbManager;
-    public JTable inventoryTable;
+    private DatabaseManager dbManager;
+    private JTable inventoryTable;
 
-    // Modified constructor to accept a DatabaseManager instance
-    public ViewInventoryFrame(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
-
+    public ViewInventoryFrame() {
+        
         setTitle("View Inventory");
         setSize(600, 400);
         setLocationRelativeTo(null); // Center the frame on the screen
@@ -37,22 +35,25 @@ public class ViewInventoryFrame extends JFrame {
 
         // Add components to the frame
         add(scrollPane, BorderLayout.CENTER);
-
+        
         // Add a button to close the window
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(e -> dispose());
         add(closeButton, BorderLayout.SOUTH);
     }
 
-    public Vector<Vector<Object>> fetchInventoryData() {
+    private Vector<Vector<Object>> fetchInventoryData() {
+
+        this.dbManager = new DatabaseManager();
+        
         Vector<Vector<Object>> data = dbManager.selectProduct();
-        if (data.size() == 0) {
-            JOptionPane.showMessageDialog(this, "There is no product in the Inventory, please add them first!");
+        
+        if(data.size() == 0){
+           JOptionPane.showMessageDialog(this, "Have no product, please add product first!");
         }
+
+
         return data;
     }
 
-    public JTable getInventoryTable() {
-        return inventoryTable;
-    }
 }

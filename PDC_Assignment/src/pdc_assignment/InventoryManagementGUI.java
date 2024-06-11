@@ -16,11 +16,6 @@ import java.sql.SQLException;
  * @author Soprathna
  */
 public class InventoryManagementGUI extends JFrame {
-    
-    private RemoveProductFrame removeProductFrame;
-    private ViewInventoryFrame viewInventoryFrame;
-    private AddProductFrame addProductFrame;
-    private DatabaseManager dbManager;
 
     public InventoryManagementGUI() {
         setTitle("Inventory Management System");
@@ -32,17 +27,19 @@ public class InventoryManagementGUI extends JFrame {
         
         JButton removeButton = new JButton("Remove Product");
         JButton viewInventoryButton = new JButton("View Inventory");
+        JButton viewCustomerOrderHistoryButton = new JButton("View Customer Order History");
 
         // Set layout
-        setLayout(new GridLayout(3, 2));
+        setLayout(new GridLayout(4, 2));
 
         // Add buttons to the frame
         add(addButton);
         
         add(removeButton);
         add(viewInventoryButton);
-
-        String url = "jdbc:derby://localhost:1527/InventoryManagement;create=true;";
+        add(viewCustomerOrderHistoryButton);
+        
+        String url = "jdbc:derby://localhost:1527/Inventory=true";
         String user = "pdc"; // Update with your database username
         String password = "pdc"; // Update with your database password
 
@@ -51,45 +48,34 @@ public class InventoryManagementGUI extends JFrame {
         addButton.addActionListener(e -> handleAdd());
         removeButton.addActionListener(e -> handleRemove());
         viewInventoryButton.addActionListener(e -> handleViewInventory());
-        
+        viewCustomerOrderHistoryButton.addActionListener(e -> handleViewCustomerOrderHistory());
         addButton.addActionListener(e -> new AddProductFrame().setVisible(true));
     }
 
-    
-    public void handleRemove() {
+    private void handleAdd() {
+        System.out.println("Handling add...");
+        // Implement add functionality here
+        AddProductFrame addProductFrame = new AddProductFrame();
+        addProductFrame.setVisible(true);
+    }
+    private void handleRemove() {
         System.out.println("Handling Remove...");
         // Implement remove functionality here
-        removeProductFrame = new RemoveProductFrame();
+        RemoveProductFrame removeProductFrame = new RemoveProductFrame();
         removeProductFrame.setVisible(true);
     }
 
-    public void handleViewInventory() {
+    private void handleViewInventory() {
         System.out.println("Handling View Inventory...");
         // Implement view inventory functionality here
-        viewInventoryFrame = new ViewInventoryFrame(dbManager);
+        ViewInventoryFrame viewInventoryFrame = new ViewInventoryFrame();
         viewInventoryFrame.setVisible(true);
     }
-    public void handleAdd() {
-        System.out.println("Handling add...");
-        // Implement purchase functionality here
-        addProductFrame = new AddProductFrame();
-        addProductFrame.setVisible(true);
+    
+    private void handleViewCustomerOrderHistory() {
+        System.out.println("Handling View Customer Order History...");
+        ViewCustomerOrderHistoryFrame viewCustomerOrderHistoryFrame = new ViewCustomerOrderHistoryFrame();
+        viewCustomerOrderHistoryFrame.setVisible(true);
     }
-    
-    public RemoveProductFrame getRemoveProductFrame() {
-        return removeProductFrame;
-    }
-    
-    public ViewInventoryFrame getViewInventoryFrame() {
-        return viewInventoryFrame;
-    }
-    
-    public AddProductFrame getAddProductFrame() {
-        return addProductFrame;
-    }
-    
-    
-    
-    
     
 }

@@ -23,15 +23,7 @@ import javax.swing.JOptionPane;
  */
 public class Register extends JFrame {
 
-    public DatabaseManager databaseManager;
-    public JTextField userText;
-    public JPasswordField passwordText;
-    public JComboBox<String> userGroupComboBox;
-    public JButton loginButton;
-    private JButton registerButton;
-    private InventoryManagementGUI inventoryManagementGUI;
-    public JButton submitButton;
-    
+    private DatabaseManager databaseManager;
     
     public Register() {
         setTitle("Register");
@@ -43,14 +35,14 @@ public class Register extends JFrame {
         constraints.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel userLabel = new JLabel("User Name:");
-        this.userText = new JTextField(20);
+        JTextField userText = new JTextField(20);
         JLabel passwordLabel = new JLabel("Password:");
-        this.passwordText = new JPasswordField(20);
+        JPasswordField passwordText = new JPasswordField(20);
          JLabel userGroupLabel = new JLabel("User Group:");
         String[] userGroups = {"admin", "customer"};
-        this.userGroupComboBox = new JComboBox<>(userGroups);
+        JComboBox<String> userGroupComboBox = new JComboBox<>(userGroups);
 
-        this.submitButton = new JButton("Submit");
+        JButton submitButton = new JButton("Submit");
         JButton backButton = new JButton("Back to Sign In");
 
         // Position User Label
@@ -62,7 +54,7 @@ public class Register extends JFrame {
         // Position User Text Field
         constraints.gridx = 1;
         constraints.gridy = 0;
-        panel.add(this.userText, constraints);
+        panel.add(userText, constraints);
 
         // Position Password Label
         constraints.gridx = 0;
@@ -72,7 +64,7 @@ public class Register extends JFrame {
         // Position Password Text Field
         constraints.gridx = 1;
         constraints.gridy = 1;
-        panel.add(this.passwordText, constraints);
+        panel.add(passwordText, constraints);
 
         // Position Group Label
         constraints.gridx = 0;
@@ -82,7 +74,7 @@ public class Register extends JFrame {
         // Position Group Text Field
         constraints.gridx = 1;
         constraints.gridy = 2;
-        panel.add(this.userGroupComboBox, constraints);
+        panel.add(userGroupComboBox, constraints);
         
         constraints.gridx = 0;
         constraints.gridy = 3;
@@ -94,7 +86,7 @@ public class Register extends JFrame {
         constraints.gridy = 4;
         constraints.gridwidth = 2;
         constraints.insets = new Insets(10, 10, 10, 10);
-        panel.add(this.submitButton, constraints);
+        panel.add(submitButton, constraints);
 
         // Position Back Button
         constraints.gridx = 0;
@@ -107,10 +99,10 @@ public class Register extends JFrame {
         // Initialize the database manager
         databaseManager = new DatabaseManager();
         
-        this.submitButton.addActionListener(e -> {
-            String userName = this.userText.getText();
-            String passWord = new String(this.passwordText.getPassword());
-            String selectedUserGroup = (String) this.userGroupComboBox.getSelectedItem();
+        submitButton.addActionListener(e -> {
+            String userName = userText.getText();
+            String passWord = new String(passwordText.getPassword());
+            String selectedUserGroup = (String) userGroupComboBox.getSelectedItem();
             System.out.println("User Name: " + userName);
             System.out.println("Password: " + passWord);
             System.out.println("User Group: " + selectedUserGroup);

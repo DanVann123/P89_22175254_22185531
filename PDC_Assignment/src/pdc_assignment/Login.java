@@ -25,17 +25,8 @@ import javax.swing.JComboBox;
  */
 
 public class Login extends JFrame {
-    
-    public JTextField userText;
-    public JPasswordField passwordText;
-    public JComboBox<String> userGroupComboBox;
-    public JButton loginButton;
-    private JButton registerButton;
-    private InventoryManagementGUI inventoryManagementGUI;
-    private DatabaseManager databaseManager;
-    
+//    private int customerId = -1;
     public Login() {
-        this.databaseManager = new DatabaseManager();
         setTitle("Login");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,17 +36,17 @@ public class Login extends JFrame {
         constraints.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel userLabel = new JLabel("User Name:");
-        userText = new JTextField(20);
+        JTextField userText = new JTextField(20);
         JLabel passwordLabel = new JLabel("Password:");
-        passwordText = new JPasswordField(20);
+        JPasswordField passwordText = new JPasswordField(20);
         
         // add one selection combobox of usergroup
         JLabel userGroupLabel = new JLabel("Login As:");
         String[] userGroups = {"admin", "customer"};
-        userGroupComboBox = new JComboBox<>(userGroups);
+        JComboBox<String> userGroupComboBox = new JComboBox<>(userGroups);
 
-        loginButton = new JButton("Login");
-        registerButton = new JButton("Register Now");
+        JButton loginButton = new JButton("Login");
+        JButton registerButton = new JButton("Register Now");
 
         // Position User Label
         constraints.gridx = 0;
@@ -117,9 +108,9 @@ public class Login extends JFrame {
              try {
                  int userId = databaseManager.userExists(userName, passWord, selectedUserGroup);
                  if (userId != -1) {
+
                     if (selectedUserGroup.equals("admin")) {
-                        inventoryManagementGUI = new InventoryManagementGUI();
-                        inventoryManagementGUI.setVisible(true);
+                        new InventoryManagementGUI().setVisible(true);
                     } else if (selectedUserGroup.equals("customer")) {
                         new CustomerGUI(userId).setVisible(true);
                     }
@@ -138,16 +129,5 @@ public class Login extends JFrame {
             this.dispose();
         });
     }
-    
-    public InventoryManagementGUI getInventoryManagementGUI() {
-        return inventoryManagementGUI;
-    }
-    
-    public void setDatabaseManager(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
-    }
-//
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> new Login().setVisible(true));
-//    }
+
 }
