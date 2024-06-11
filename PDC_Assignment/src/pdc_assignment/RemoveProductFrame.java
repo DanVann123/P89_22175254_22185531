@@ -15,7 +15,8 @@ import java.sql.*;
  * @author xuyan
  */
 public class RemoveProductFrame extends JFrame{
-   private JTextField IDField;
+    
+    private JTextField IDField;
    
     private DatabaseManager dbManager;
 
@@ -45,31 +46,21 @@ public class RemoveProductFrame extends JFrame{
         
         
         removeButton.addActionListener(e -> {
-            // Get product information from text fields
-            
-            String idText = IDField.getText().trim();
-            
-            if (idText.isEmpty())
-            {
-                JOptionPane.showMessageDialog(this, "Please enter a Product ID.", "Warning", JOptionPane.WARNING_MESSAGE);
-                System.out.println("ID field is empty.");
-                return;
-            }
             try {
-                int ID = Integer.parseInt(idText);
+                int ID = Integer.parseInt(IDField.getText());
+
                 dbManager = new DatabaseManager();
-                boolean isRemoved = dbManager.removeProduct(ID);
+
+                boolean isRemoved = dbManager.removeProduct(ID); // Call removeProduct once
 
                 if (isRemoved) {
                     JOptionPane.showMessageDialog(this, "Product removed from inventory: Product ID: " + ID);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Product does not exist or removal failed.", "Warning", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Failed to remove product.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                // Handle case where ID is not a valid integer
-                JOptionPane.showMessageDialog(this, "Invalid Product ID. Please enter a valid integer.", "Warning", JOptionPane.WARNING_MESSAGE);
-                System.out.println("Invalid Product ID: " + idText); // Log to console
-            } 
+                JOptionPane.showMessageDialog(this, "Please enter a valid product ID.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
    
@@ -86,4 +77,7 @@ public class RemoveProductFrame extends JFrame{
          dispose();
       
     }
+
+
+ 
 }

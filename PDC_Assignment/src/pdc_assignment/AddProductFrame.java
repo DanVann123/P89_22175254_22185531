@@ -27,8 +27,6 @@ public class AddProductFrame extends JFrame {
         setSize(400, 300);
         setLocationRelativeTo(null); // Center the frame on the screen
        
-setLocationRelativeTo(null); // Center the frame on the screen
-
         // Create panel for the main content
         JPanel mainPanel = new JPanel(new GridLayout(5, 2));
 
@@ -75,18 +73,22 @@ setLocationRelativeTo(null); // Center the frame on the screen
         
         addButton.addActionListener(e -> {
             // Get product information from text fields
-            int ID = Integer.parseInt(IDField.getText());
-            String name = nameField.getText();
-            double price = Double.parseDouble(priceField.getText());
-            int stock = Integer.parseInt(stockField.getText());
-            dbManager = new DatabaseManager();
-            
-            boolean isInserted = dbManager.insertProduct(ID, name, stock, price);
+            try {
+                int ID = Integer.parseInt(IDField.getText());
+                String name = nameField.getText();
+                double price = Double.parseDouble(priceField.getText());
+                int stock = Integer.parseInt(stockField.getText());
+                dbManager = new DatabaseManager();
 
-            if (isInserted) {
-                JOptionPane.showMessageDialog(this, "Product added to inventory: Product ID: "+ID+ ", Name: " + name + ", Price: " + price + ", Stock: " + stock);
-            } else {
-                JOptionPane.showMessageDialog(this, "Product already exists or insertion failed.", "Warning", JOptionPane.WARNING_MESSAGE);
+                boolean isInserted = dbManager.insertProduct(ID, name, stock, price);
+
+                if (isInserted) {
+                    JOptionPane.showMessageDialog(this, "Product added to inventory: Product ID: "+ID+ ", Name: " + name + ", Price: " + price + ", Stock: " + stock);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Product already exists or insertion failed.", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter valid input for all fields.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 

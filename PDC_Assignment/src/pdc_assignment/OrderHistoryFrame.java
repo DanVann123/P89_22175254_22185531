@@ -18,32 +18,37 @@ public class OrderHistoryFrame extends JFrame{
     private DefaultTableModel orderHistoryTableModel;
     private DatabaseManager dbManager;
 
-    public OrderHistoryFrame(DatabaseManager dbManager) {
+    public OrderHistoryFrame(Integer customerId,DatabaseManager dbManager) {
         setTitle("Order History");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         this.dbManager = dbManager;
-
+    
         // Set layout manager
         setLayout(new BorderLayout());
 
         // Order History Table
-        orderHistoryTableModel = new DefaultTableModel(new String[]{"Order ID", "Product Name", "Quantity", "Price", "Order Date"}, 0);
+        orderHistoryTableModel = new DefaultTableModel(new String[]{"Order ID", "Customer Id", "Purchase Date", "Total Price"}, 0);
         orderHistoryTable = new JTable(orderHistoryTableModel);
         JScrollPane orderHistoryScrollPane = new JScrollPane(orderHistoryTable);
         add(orderHistoryScrollPane, BorderLayout.CENTER);
 
         // Load order history from database
-        loadOrderHistory();
+        loadOrderHistory(customerId);
     }
 
-    private void loadOrderHistory() {
-        Vector<Vector<Object>> orders = dbManager.selectOrderHistory();
+    public void loadOrderHistory(int customerId) {
+        // Clear the existing order history
+        orderHistoryTableModel.setRowCount(0);
+
+        // Fetch order history from the database for the specified customer ID
+        Vector<Vector<Object>> orders = dbManager.selectCustomerOrderHistory(customerId);
+
+        // Populate the order history table with the fetched data
         for (Vector<Object> order : orders) {
             orderHistoryTableModel.addRow(order);
         }
     }
-
 }

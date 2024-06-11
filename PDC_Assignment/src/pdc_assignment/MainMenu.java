@@ -52,7 +52,7 @@ public class MainMenu extends JFrame{
         add(buttonPanel, BorderLayout.CENTER);
         
         loginButton.addActionListener(e -> {
-            System.out.println("Password11111aaaaaaaaaaaaaaaaa:");
+            System.out.println("Password:");
 
             new Login().setVisible(true);
             this.dispose();
