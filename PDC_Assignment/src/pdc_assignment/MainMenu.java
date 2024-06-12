@@ -23,7 +23,7 @@ public class MainMenu extends JFrame{
     public MainMenu()
     {
         setTitle("Main Menu");
-        setSize(400, 300);
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new GridLayout(3,1));
         
