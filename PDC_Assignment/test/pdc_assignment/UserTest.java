@@ -61,13 +61,16 @@ public class UserTest {
     @Test
     public void testUserExists() throws Exception {
         System.out.println("userExists");
-        String username = "";
-        String password = "";
-        String userGroup = "";
+        String username = "123";
+        String password = "123";
+        String userGroup = "admin";
         DatabaseManager instance = new DatabaseManager();
-        int expResult = 0;
+        
+        int expResult = 1;
         int result = instance.userExists(username, password, userGroup);
         assertEquals(expResult, result);
+   
+    }
         
     }
 
