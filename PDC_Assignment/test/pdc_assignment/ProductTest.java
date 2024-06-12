@@ -39,33 +39,71 @@ public class ProductTest {
     }
      
     /**
-     * Test of insertSaleOrderItems method, of class DatabaseManager.
+     * Test of insertProduct method, of class DatabaseManager.
      */
     @Test
-    public void testInsertSaleOrderItems() throws Exception {
-        System.out.println("insertSaleOrderItems");
-        int saleOrderId = 1;
-        int productId = 2;
-        int quantity = 1;
-        double price = 4.99;
-        String productName = "ruler"; 
+    public void testInsertProduct() {
+        System.out.println("insertProduct");
+        int productId = 5;
+        String productName = "pen box";
+        int stock = 100;
+        double price = 10.99;
         DatabaseManager instance = new DatabaseManager();
-        instance.insertSaleOrderItems(saleOrderId, productId, quantity, price);
-
-    }
-
-    /**
-     * Test of selectCustomerOrderHistory method, of class DatabaseManager.
-     */
-    @Test
-    public void testSelectCustomerOrderHistory() {
-        System.out.println("selectCustomerOrderHistory");
-        int customerId = 456;
-        DatabaseManager instance = new DatabaseManager();
-        Vector<Vector<Object>> expResult = new Vector<>(); // Empty vector
-        Vector<Vector<Object>> result = instance.selectCustomerOrderHistory(customerId);
+        // Ensure product does not exist before insertion
+        instance.removeProduct(productId);
+        
+        boolean expResult = true;
+        boolean result = instance.insertProduct(productId, productName, stock, price);
         assertEquals(expResult, result);
+        // Verify the product was actually inserted
+        Vector<Vector<Object>> products = instance.selectProduct();
+        boolean productFound = false;
+        for (Vector<Object> product : products) {
+            if ((int) product.get(0) == productId) {
+                assertEquals(productName, product.get(1));
+                assertEquals(stock, product.get(2));
+                assertEquals(price, product.get(3));
+                productFound = true;
+                break;
+            }
+        }
+        assertTrue(productFound);
     }
 
+     /**
+     * Test of selectProduct method, of class DatabaseManager.
+     */
+    @Test
+    public void testSelectProduct() {
+       System.out.println("selectProduct");
+       DatabaseManager instance = new DatabaseManager();
+       Vector<Vector<Object>> result = instance.selectProduct();
+        
+        
+        assertNotNull(result);
+        
+     
+         for (Vector<Object> row : result) {
+            assertNotNull(row.get(0)); // productId
+            assertNotNull(row.get(1)); // productName
+            assertNotNull(row.get(2)); // stock
+            assertNotNull(row.get(3)); // price
+        }
+    }
+    /**
+     * Test of removeProduct method, of class DatabaseManager.
+     */
+    @Test
+    public void testRemoveProduct() {
+       
+    System.out.println("removeProduct");
+    int productId = 1;
+    DatabaseManager instance = new DatabaseManager();
+    // Insert a product to remove
+    instance.insertProduct(productId, "pen", 1000, 3.99);
 
+    boolean result = instance.removeProduct(productId);
+    assertTrue(result);
+
+    }
 }
