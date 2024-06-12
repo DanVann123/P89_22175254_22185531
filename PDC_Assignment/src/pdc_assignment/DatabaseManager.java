@@ -246,13 +246,13 @@ public class DatabaseManager {
 
     
     public void updateInventory(int productId, int quantity) throws SQLException {
-    String updateInventorySQL = "UPDATE product SET stock = stock - ? WHERE productId = ?";
-    try (PreparedStatement pstmt = connection.prepareStatement(updateInventorySQL)) {
-        pstmt.setInt(1, quantity);
-        pstmt.setInt(2, productId);
-        pstmt.executeUpdate();
+        String updateInventorySQL = "UPDATE product SET stock = stock - ? WHERE productId = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(updateInventorySQL)) {
+            pstmt.setInt(1, quantity);
+            pstmt.setInt(2, productId);
+            pstmt.executeUpdate();
+        }
     }
-}
     
     public void insertSaleOrderItems(int saleOrderId, int productId, int quantity, double price) throws SQLException {
         String insertOrderItemsSQL = "INSERT INTO sale_order_items (sale_order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
@@ -276,11 +276,13 @@ public class DatabaseManager {
                 int quantity = (int) cartItem.get(3);
                 double price = (double) cartItem.get(4);
 
-                // Deduct stock from the database
-                updateInventory(productId, quantity);
+                if (quantity > 0) {
+                    // Deduct stock from the database
+                    updateInventory(productId, quantity);
 
-                // Insert sale order items
-                insertSaleOrderItems(saleOrderId, productId, quantity, price);
+                    // Insert sale order items
+                    insertSaleOrderItems(saleOrderId, productId, quantity, price);
+                }
             }
 
             clearCart(customerId);
@@ -392,18 +394,13 @@ public class DatabaseManager {
     }
     
     public Vector<Vector<Object>> selectCart() {
-
         Vector<Vector<Object>> data = new Vector<>();
-        String query = "SELECT * FROM cart_items";
-                         
-          try (PreparedStatement statement = connection.prepareStatement(query)) {
+        String query = "SELECT * FROM cart_items WHERE quantity > 0";
 
-             ResultSet resultSet = statement.executeQuery();
-                // System.out.println(1113331111);
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                // System.out.println(1111111);
                 Vector<Object> row = new Vector<>();
-//                row.add(resultSet.getInt("id"));
                 row.add(resultSet.getInt("customer_id"));
                 row.add(resultSet.getInt("product_id"));
                 row.add(resultSet.getString("product_name"));
@@ -414,34 +411,35 @@ public class DatabaseManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-     
-         return data;
-     }
+
+        return data;
+    }
     
     
     public Boolean deleteCartItem(Integer productId) {
         String selectCartItemQuery = "SELECT quantity FROM cart_items WHERE product_id = ?";
-        String deleteCartItemQuery = "DELETE FROM cart_items WHERE product_id = ?";
-        
-        try (PreparedStatement selectStmt = connection.prepareStatement(selectCartItemQuery);
-             PreparedStatement deleteStmt = connection.prepareStatement(deleteCartItemQuery)) {
+        String updateCartItemQuery = "UPDATE cart_items SET quantity = 0 WHERE product_id = ?";
 
+        try (PreparedStatement selectStmt = connection.prepareStatement(selectCartItemQuery);
+             PreparedStatement updateStmt = connection.prepareStatement(updateCartItemQuery)) {
+
+            // Check if the item exists in the cart
             selectStmt.setInt(1, productId);
             ResultSet resultSet = selectStmt.executeQuery();
-            int quantity = 0;
+
             if (resultSet.next()) {
-                quantity = resultSet.getInt("quantity");
+                // Update the cart item quantity to 0
+                updateStmt.setInt(1, productId);
+                int result = updateStmt.executeUpdate();
+
+                if (result > 0) {
+                    System.out.println("Cart item quantity updated to 0 for productId: " + productId);
+                    return true;
+                }
+            } else {
+                // Item not found in cart
+                JOptionPane.showMessageDialog(null, "Item not found in cart.", "Warning", JOptionPane.WARNING_MESSAGE);
             }
-
-            deleteStmt.setInt(1, productId);
-            int result = deleteStmt.executeUpdate();
-
-            if (result > 0) {
-                increaseProductStock(productId, quantity);
-                System.out.println("Delete statement executed, affected rows: " + result);
-                return true;
-            }
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -461,7 +459,7 @@ public class DatabaseManager {
              ex.printStackTrace();
         }
         return true;
-    }
+    } 
      
     private void clearCart(int userId) {
         String deleteCartQuery = "DELETE FROM cart_items WHERE customer_id = ?";
