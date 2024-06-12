@@ -37,4 +37,35 @@ public class OrderTest {
         
         
     }
+     
+    /**
+     * Test of insertSaleOrderItems method, of class DatabaseManager.
+     */
+    @Test
+    public void testInsertSaleOrderItems() throws Exception {
+        System.out.println("insertSaleOrderItems");
+        int saleOrderId = 1;
+        int productId = 2;
+        int quantity = 1;
+        double price = 4.99;
+        String productName = "ruler"; 
+        DatabaseManager instance = new DatabaseManager();
+        instance.insertSaleOrderItems(saleOrderId, productId, quantity, price);
+
+    }
+
+    /**
+     * Test of selectCustomerOrderHistory method, of class DatabaseManager.
+     */
+    @Test
+    public void testSelectCustomerOrderHistory() {
+        System.out.println("selectCustomerOrderHistory");
+        int customerId = 456;
+        DatabaseManager instance = new DatabaseManager();
+        Vector<Vector<Object>> expResult = new Vector<>(); // Empty vector
+        Vector<Vector<Object>> result = instance.selectCustomerOrderHistory(customerId);
+        assertEquals(expResult, result);
+    }
+}
+
 }
